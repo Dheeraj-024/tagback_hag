@@ -1,0 +1,29 @@
+# Render Blueprint for TagBack (+ PingME community layer).
+# NOTE: if your service (tagback-1) was created by hand in the dashboard, Render ignores this file:
+# set the same environment variables in Dashboard > your service > Environment instead.
+services:
+  - type: web
+    name: tagback
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PLACE_KEY          # responder/community-inbox password; Render generates a stable one
+        generateValue: true
+      - key: ANTHROPIC_API_KEY  # optional: AI category suggestions (falls back to built-in rules)
+        sync: false
+      - key: RESEND_API_KEY     # optional: email alerts to owners
+        sync: false
+    # --- Keep data across deploys (needs a PAID plan; free plan has no disk) ---
+    # Change `plan: free` to `plan: starter`, uncomment this block and add the DATA_FILE env var below.
+    # disk:
+    #   name: tagback-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
+    # (envVars) - key: DATA_FILE
+    #             value: /var/data/data.json
